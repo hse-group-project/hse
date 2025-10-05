@@ -14,7 +14,7 @@
 - **Иван Смирнов** - [@VanoNey30](https://t.me/VanoNey30)
 - **Александр Бессонов** - [@bezzonov](https://t.me/bezzonov)
 - **Кристина Кошечко** - [@kkoshe4ko](https://t.me/kkoshe4ko)
-- **Анастасия Краповец** - [@askarpovets](https://t.me/askarpovets)
+- **Анастасия Карповец** - [@askarpovets](https://t.me/askarpovets)
 
 ### Куратор
 - **Артем Поспелов** - [@posptem](https://t.me/posptem)
