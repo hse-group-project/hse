@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  diplom:
+    container_name: moex_iss_indices
+    command: python3 moex_iss_indices/moex_iss_indices.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: Dockerfile
+    volumes:
+      - moex_iss_indices:/app/data
+
+volumes:
+  moex_iss_indices:
