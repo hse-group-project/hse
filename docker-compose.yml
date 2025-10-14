@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   db:
     image: postgres
@@ -13,5 +14,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  moex_iss_indices:
+    container_name: moex_iss_indices
+    command: python3 moex_iss_indices/moex_iss_indices.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: moex_iss_indices/Dockerfile
+    volumes:
+      - moex_iss_indices:/app/data
+
 volumes:
-      postgres_data:
+  postgres_data:
+  moex_iss_indices:
