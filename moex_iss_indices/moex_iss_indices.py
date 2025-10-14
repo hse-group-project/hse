@@ -66,10 +66,10 @@ def main():
             full_df = pd.concat(all_data, ignore_index=True)
             update_db(full_df)
             print("Данные за сегодня успешно собраны и обновлены в БД.")
-            break
         else:
-            print("Данные за сегодня пока отсутствуют. Повтор через 3 часа.")
-            time.sleep(3 * 3600)
+            print("Данные за сегодня пока отсутствуют.")
+        print("Ждем 3 часа до следующей итерации.")
+        time.sleep(3 * 3600)
 
 moex_indices_codes = [
     "IMOEX",    # Индекс МосБиржи
