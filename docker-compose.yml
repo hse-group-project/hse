@@ -35,7 +35,19 @@ services:
     volumes:
       - moex_iss_dividends:/app/data
 
+
+  cbrf_data:
+    container_name: cbrf_data
+    command: python3 ./cbrf_data/cbrf_data.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./cbrf_data/Dockerfile
+    volumes:
+      - cbrf_data:/app/data
+
 volumes:
   postgres_data:
   moex_iss_indices:
   moex_iss_dividends:
+  cbrf_data:
