@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   db:
     image: postgres
@@ -13,5 +14,52 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  moex_iss_indices:
+    container_name: moex_iss_indices
+    command: python3 ./moex_iss_indices/moex_iss_indices.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./moex_iss_indices/Dockerfile
+    volumes:
+      - moex_iss_indices:/app/data
+
+
+  moex_iss_dividends:
+    container_name: moex_iss_dividends
+    command: python3 ./moex_iss_dividends/moex_iss_dividends.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./moex_iss_dividends/Dockerfile
+    volumes:
+      - moex_iss_dividends:/app/data
+
+
+  cbrf_data:
+    container_name: cbrf_data
+    command: python3 ./cbrf/cbrf_data.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./cbrf/Dockerfile
+    volumes:
+      - cbrf_data:/app/data
+
+
+  t_pulse:
+    container_name: t_pulse
+    command: python3 ./automatization/parse_tpulse_daily.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./automatization/Dockerfile
+    volumes:
+      - t_pulse:/app/data
+
 volumes:
-      postgres_data:
+  postgres_data:
+  moex_iss_indices:
+  moex_iss_dividends:
+  cbrf_data:
+  t_pulse:
