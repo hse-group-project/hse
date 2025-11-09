@@ -163,14 +163,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-print("Python version:", sys.version)
-print("pandas version:", pd.__version__)
-print("psycopg2 version:", psycopg2.__version__)
-
-# TinkoffPulse из tpulse не всегда имеет __version__
-try:
-    print("TinkoffPulse version:", TinkoffPulse.__version__)
-except AttributeError:
-    print("TinkoffPulse version: (не поддерживается)")
