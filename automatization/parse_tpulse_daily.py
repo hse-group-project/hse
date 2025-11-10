@@ -122,7 +122,7 @@ tickers = [
     "SBERP",
     "SNGSP",
     "TATNP",
-    "TTLK",
+    "TTLK"
 ]
 
 
@@ -246,5 +246,5 @@ def main():
         time.sleep(24 * 60 * 60)
 
 
-if __name__ == "__main__":
+if name == "__main__":
     main()
