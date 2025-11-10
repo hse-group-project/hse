@@ -40,8 +40,91 @@ def log(message):
 
 
 # ----------------- Список тикеров -----------------
-with open("tickers.txt") as f:
-    share_list = [line.strip() for line in f.readlines()]
+
+tickers = [
+    "SBER",
+    "GAZP",
+    "T",
+    "X5",
+    "PIKK",
+    "PLZL",
+    "LKOH",
+    "GMKN",
+    "VTBR",
+    "NVTK",
+    "YDEX",
+    "TATN",
+    "SMLT",
+    "SPBE",
+    "ROSN",
+    "AFLT",
+    "IRAO",
+    "VKCO",
+    "CHMF",
+    "NLMK",
+    "MAGN",
+    "MGNT",
+    "MTLR",
+    "AFKS",
+    "MOEX",
+    "POSI",
+    "ALRS",
+    "BELU",
+    "MTSS",
+    "SVCB",
+    "SNGS",
+    "HEAD",
+    "CNRU",
+    "PHOR",
+    "RTKM",
+    "SIBN",
+    "UGLD",
+    "RUAL",
+    "HYDR",
+    "BSPB",
+    "FEES",
+    "EUTR",
+    "RNFT",
+    "MRKC",
+    "MDMG",
+    "FLOT",
+    "UPRO",
+    "ASTR",
+    "IVAT",
+    "LENT",
+    "WUSH",
+    "UWGN",
+    "ENPG",
+    "TRMK",
+    "MVID",
+    "RASP",
+    "RAGR",
+    "MRKP",
+    "SVAV",
+    "AQUA",
+    "RENI",
+    "SOFL",
+    "SGZH",
+    "SFIN",
+    "OZPH",
+    "NMTP",
+    "FIXR",
+    "OGKB",
+    "SELG",
+    "LEAS",
+    "CBOM",
+    "VSMO",
+    "IRKT",
+    "VSEH",
+    "AKRN",
+    "LSRG",
+    "RTKMP",
+    "SBERP",
+    "SNGSP",
+    "TATNP",
+    "TTLK",
+]
+
 
 # ----------------- Функции -----------------
 
@@ -148,29 +231,20 @@ def update_posts_table(df):
 
 
 def main():
-    log("[INFO] Запуск скрипта парсинга Т-пульса")
-    all_data = pd.DataFrame()
-    for ticker in share_list:
-        log(f"[INFO] Парсинг тикера {ticker} ...")
-        df = parsing_tpulse_last_2_weeks(ticker, KEYS)
-        log(f"[INFO] Найдено {len(df)} постов за последние 2 недели для {ticker}")
-        all_data = pd.concat([all_data, df], axis=0)
-        time.sleep(SLEEP_BETWEEN_TICKERS)  # пауза между тикерами
+    while True:
+        log("[INFO] Запуск скрипта парсинга Т-пульса")
+        all_data = pd.DataFrame()
+        for ticker in tickers:
+            log(f"[INFO] Парсинг тикера {ticker} ...")
+            df = parsing_tpulse_last_2_weeks(ticker, KEYS)
+            log(f"[INFO] Найдено {len(df)} постов за последние 2 недели для {ticker}")
+            all_data = pd.concat([all_data, df], axis=0)
+            time.sleep(SLEEP_BETWEEN_TICKERS)  # пауза между тикерами
 
-    update_posts_table(all_data)
-    log("[INFO] Скрипт завершил выполнение.")
+        update_posts_table(all_data)
+        log("[INFO] Скрипт завершил выполнение. Ждем 1 день до следующей итерации.")
+        time.sleep(24 * 60 * 60)
 
 
 if __name__ == "__main__":
     main()
-
-
-print("Python version:", sys.version)
-print("pandas version:", pd.__version__)
-print("psycopg2 version:", psycopg2.__version__)
-
-# TinkoffPulse из tpulse не всегда имеет __version__
-try:
-    print("TinkoffPulse version:", TinkoffPulse.__version__)
-except AttributeError:
-    print("TinkoffPulse version: (не поддерживается)")
