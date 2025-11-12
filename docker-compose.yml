@@ -16,33 +16,33 @@ services:
 
   moex_iss_indices:
     container_name: moex_iss_indices
-    command: python3 ./moex_iss_indices/moex_iss_indices.py
+    command: uv run python ./notebooks/moex_iss_indices/moex_iss_indices.py
     restart: always
     build:
       context: "."
-      dockerfile: ./notebooks/moex_iss_indices/Dockerfile
+      dockerfile: ./Dockerfile
     volumes:
       - moex_iss_indices:/app/data
 
 
   moex_iss_dividends:
     container_name: moex_iss_dividends
-    command: python3 ./moex_iss_dividends/moex_iss_dividends.py
+    command: uv run python ./notebooks/moex_iss_dividends/moex_iss_dividends.py
     restart: always
     build:
       context: "."
-      dockerfile: ./notebooks/moex_iss_dividends/Dockerfile
+      dockerfile: ./Dockerfile
     volumes:
       - moex_iss_dividends:/app/data
 
 
   cbrf_data:
     container_name: cbrf_data
-    command: python3 ./cbrf/cbrf_data.py
+    command: uv run python ./notebooks/cbrf/cbrf_data.py
     restart: always
     build:
       context: "."
-      dockerfile: ./notebooks/cbrf/Dockerfile
+      dockerfile: ./Dockerfile
     volumes:
       - cbrf_data:/app/data
 
