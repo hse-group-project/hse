@@ -16,7 +16,7 @@ services:
 
   moex_iss_indices:
     container_name: moex_iss_indices
-    command: uv run python ./notebooks/moex_iss_indices/moex_iss_indices.py
+    command: uv run python ./scripts/moex_iss_indices/moex_iss_indices.py
     restart: always
     build:
       context: "."
@@ -27,7 +27,7 @@ services:
 
   moex_iss_dividends:
     container_name: moex_iss_dividends
-    command: uv run python ./notebooks/moex_iss_dividends/moex_iss_dividends.py
+    command: uv run python ./scripts/moex_iss_dividends/moex_iss_dividends.py
     restart: always
     build:
       context: "."
@@ -38,7 +38,7 @@ services:
 
   cbrf_data:
     container_name: cbrf_data
-    command: uv run python ./notebooks/cbrf/cbrf_data.py
+    command: uv run python ./scripts/cbrf/cbrf_data.py
     restart: always
     build:
       context: "."
