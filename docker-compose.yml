@@ -20,7 +20,7 @@ services:
     restart: always
     build:
       context: "."
-      dockerfile: ./moex_iss_indices/Dockerfile
+      dockerfile: ./notebooks/moex_iss_indices/Dockerfile
     volumes:
       - moex_iss_indices:/app/data
 
@@ -31,7 +31,7 @@ services:
     restart: always
     build:
       context: "."
-      dockerfile: ./moex_iss_dividends/Dockerfile
+      dockerfile: ./notebooks/moex_iss_dividends/Dockerfile
     volumes:
       - moex_iss_dividends:/app/data
 
@@ -42,7 +42,7 @@ services:
     restart: always
     build:
       context: "."
-      dockerfile: ./cbrf/Dockerfile
+      dockerfile: ./notebooks/cbrf/Dockerfile
     volumes:
       - cbrf_data:/app/data
 
