@@ -46,8 +46,20 @@ services:
     volumes:
       - cbrf_data:/app/data
 
+
+  t_pulse:
+    container_name: t_pulse
+    command: uv run python ./scripts/automatization/parse_tpulse_daily.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./Dockerfile
+    volumes:
+      - t_pulse:/app/data
+
 volumes:
   postgres_data:
   moex_iss_indices:
   moex_iss_dividends:
   cbrf_data:
+  t_pulse:
