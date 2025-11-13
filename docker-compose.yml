@@ -22,7 +22,7 @@ services:
       context: "."
       dockerfile: ./Dockerfile
     volumes:
-      - moex_iss_indices:/app/data
+      - ./scripts/moex_iss_indices:/code/scripts/moex_iss_indices
 
 
   moex_iss_dividends:
@@ -33,7 +33,7 @@ services:
       context: "."
       dockerfile: ./Dockerfile
     volumes:
-      - moex_iss_dividends:/app/data
+      - ./scripts/moex_iss_dividends:/code/scripts/moex_iss_dividends
 
 
   cbrf_data:
@@ -44,7 +44,7 @@ services:
       context: "."
       dockerfile: ./Dockerfile
     volumes:
-      - cbrf_data:/app/data
+      - ./scripts/cbrf_data:/code/scripts/cbrf_data
 
 
   t_pulse:
@@ -55,7 +55,7 @@ services:
       context: "."
       dockerfile: ./Dockerfile
     volumes:
-      - t_pulse:/app/data
+      - ./scripts/t_pulse:/code/scripts/t_pulse
 
 volumes:
   postgres_data:
