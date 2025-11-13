@@ -12,5 +12,6 @@ dependencies = [
     "sqlalchemy>=2.0.44",
     "tinkoff-investments>=0.2.0b117",
     "SQLAlchemy>=1.4",
-    "psycopg2-binary>=2.9"
+    "psycopg2-binary>=2.9",
+    "tpulse>=0.1.9"
 ]

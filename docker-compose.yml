@@ -49,7 +49,7 @@ services:
 
   t_pulse:
     container_name: t_pulse
-    command: uv run python ./scripts/automatization/parse_tpulse_daily.py
+    command: uv run python ./scripts/t-pulse/automatization/parse_tpulse_daily.py
     restart: always
     build:
       context: "."
