@@ -129,11 +129,11 @@ tickers = [
 # ----------------- Функции -----------------
 
 
-def parsing_tpulse_last_2_weeks(ticker, KEYS):
+def parsing_tpulse_last_twentyeight_days(ticker, KEYS):
     """Парсим посты Т-пульса за последние 2 недели по тикеру с паузами и повторными попытками"""
     cursor = None
     raw_data = []
-    two_weeks_ago = pd.Timestamp.now() - pd.Timedelta(days=14)
+    twentyeight_days_ago = pd.Timestamp.now() - pd.Timedelta(days=28)
 
     while True:
         for attempt in range(MAX_RETRIES):
@@ -144,7 +144,7 @@ def parsing_tpulse_last_2_weeks(ticker, KEYS):
 
                 for post in posts:
                     post_date = pd.to_datetime(post["inserted"]).tz_localize(None)
-                    if post_date < two_weeks_ago:
+                    if post_date < twentyeight_days_ago:
                         return pd.DataFrame(raw_data)
 
                     data = {key: post[key] for key in KEYS}
@@ -191,7 +191,7 @@ def update_posts_table(df):
         cursor.execute(
             f"""
             DELETE FROM {TABLE_NAME}
-            WHERE ticker = %s AND inserted >= current_date - interval '14 days'
+            WHERE ticker = %s AND inserted >= current_date - interval '28 days'
         """,
             (ticker,),
         )
@@ -236,7 +236,7 @@ def main():
         all_data = pd.DataFrame()
         for ticker in tickers:
             log(f"[INFO] Парсинг тикера {ticker} ...")
-            df = parsing_tpulse_last_2_weeks(ticker, KEYS)
+            df = parsing_tpulse_last_twentyeight_days(ticker, KEYS)
             log(f"[INFO] Найдено {len(df)} постов за последние 2 недели для {ticker}")
             all_data = pd.concat([all_data, df], axis=0)
             time.sleep(SLEEP_BETWEEN_TICKERS)  # пауза между тикерами
