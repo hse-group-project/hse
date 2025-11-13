@@ -1,7 +1,7 @@
 import requests
 import time
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import create_engine
 from requests.exceptions import ConnectTimeout
 import warnings

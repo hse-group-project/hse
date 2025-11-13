@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
 import psycopg2
 from tpulse import TinkoffPulse
@@ -161,7 +161,7 @@ def parsing_tpulse_last_2_weeks(ticker, KEYS):
                 break  # успешный запрос
             except Exception as e:
                 log(
-                    f"[WARN] Ошибка при парсинге {ticker}: {e}, попытка {attempt+1}/{MAX_RETRIES}"
+                    f"[WARN] Ошибка при парсинге {ticker}: {e}, попытка {attempt + 1}/{MAX_RETRIES}"
                 )
                 time.sleep(SLEEP_ON_ERROR)
         else:
