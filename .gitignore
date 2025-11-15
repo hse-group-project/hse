@@ -12,3 +12,6 @@ __pycache__/
 .DS_Store?
 ._*
 Thumbs.db
+
+# Файлы для работы проекта
+*.egg-info
