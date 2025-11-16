@@ -2257,7 +2257,7 @@ wheels = [
 [[package]]
 name = "russian-stocks-prediction-ml-dl"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "asyncio" },
     { name = "ipykernel" },
