@@ -7,10 +7,12 @@ requires-python = ">=3.11"
 dependencies = [
     "asyncio>=4.0.0",
     "pandas>=1.5.0",
+    "psycopg2>=2.9.11",
     "requests>=2.28",
     "sqlalchemy>=2.0.44",
     "tinkoff-investments>=0.2.0b117",
     "SQLAlchemy>=1.4",
+    "psycopg2-binary>=2.9",
     "tpulse>=0.1.9",
     "tqdm>=4.67.1",
     "matplotlib>=3.10.7",
@@ -20,6 +22,4 @@ dependencies = [
     "plotly>=6.4.0",
     "scikit-learn>=1.2.2",
     "statsmodels>=0.14.0",
-    "jupyter>=1.1.1",
-    "ipykernel>=7.1.0",
 ]
