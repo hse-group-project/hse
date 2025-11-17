@@ -4,11 +4,11 @@
 import pandas as pd
 from datetime import datetime
 import time
+from sqlalchemy import text
 from tpulse import TinkoffPulse
 
 
 from utils.utils import connection
-
 
 
 TABLE_NAME = "t_pulse_data"
@@ -179,47 +179,50 @@ def update_posts_table(df):
     if df.empty:
         log("[INFO] Нет новых данных для обновления.")
         return
+
     conn = connection()
-    cursor = conn.cursor()
 
-    for ticker in df["ticker"].unique():
-        cursor.execute(
-            f"""
-            DELETE FROM {TABLE_NAME}
-            WHERE ticker = %s AND inserted >= current_date - interval '28 days'
-        """,
-            (ticker,),
-        )
-        conn.commit()
-
-        count = 0
-        for _, row in df[df["ticker"] == ticker].iterrows():
-            cursor.execute(
-                f"""
-                INSERT INTO {TABLE_NAME} (id, ticker, inserted, text, commentscount, reactioncount, reactions_counters)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (id, ticker) DO UPDATE SET
-                    text = EXCLUDED.text,
-                    commentscount = EXCLUDED.commentscount,
-                    reactioncount = EXCLUDED.reactioncount,
-                    reactions_counters = EXCLUDED.reactions_counters
-            """,
-                (
-                    row.id,
-                    row.ticker,
-                    row.inserted,
-                    row.text,
-                    row.commentscount,
-                    row.reactioncount,
-                    str(row.reactions_counters),
-                ),
+    with conn.begin():  # автоматическое управление транзакциями
+        for ticker in df["ticker"].unique():
+            # Удаляем старые данные
+            conn.execute(
+                text(f"""
+                    DELETE FROM {TABLE_NAME}
+                    WHERE ticker = :ticker AND inserted >= current_date - interval '28 days'
+                """),
+                {"ticker": ticker},
             )
-            count += 1
-        conn.commit()
-        log(f"[INFO] Данные по {ticker} обновлены: {count} постов")
 
-    cursor.close()
-    conn.close()
+            # Вставляем новые данные
+            ticker_data = df[df["ticker"] == ticker]
+            count = 0
+
+            for _, row in ticker_data.iterrows():
+                conn.execute(
+                    text(f"""
+                        INSERT INTO {TABLE_NAME} (id, ticker, inserted, text, commentscount, reactioncount, reactions_counters)
+                        VALUES (:id, :ticker, :inserted, :text, :commentscount, :reactioncount, :reactions_counters)
+                        ON CONFLICT (id, ticker) DO UPDATE SET
+                            text = EXCLUDED.text,
+                            commentscount = EXCLUDED.commentscount,
+                            reactioncount = EXCLUDED.reactioncount,
+                            reactions_counters = EXCLUDED.reactions_counters
+                    """),
+                    {
+                        "id": row.id,
+                        "ticker": row.ticker,
+                        "inserted": row.inserted,
+                        "text": row.text,
+                        "commentscount": row.commentscount,
+                        "reactioncount": row.reactioncount,
+                        "reactions_counters": str(row.reactions_counters),
+                    },
+                )
+                count += 1
+
+            log(f"[INFO] Данные по {ticker} обновлены: {count} постов")
+
+    # Соединение автоматически закрывается при выходе из with блока
 
 
 # ----------------- Основной цикл -----------------
