@@ -57,9 +57,22 @@ services:
     volumes:
       - ./scripts/t_pulse:/code/scripts/t_pulse
 
+
+  tinkoff_stock:
+    container_name: t_pulse
+    command: uv run python ./scripts/tinkoff/tinkoff_stock.py
+    restart: always
+    build:
+      context: "."
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./scripts/tinkoff:/code/scripts/tinkoff
+
+
 volumes:
   postgres_data:
   moex_iss_indices:
   moex_iss_dividends:
   cbrf_data:
   t_pulse:
+  tinkoff:
