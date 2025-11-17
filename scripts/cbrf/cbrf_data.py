@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from datetime import datetime
-from sqlalchemy import Table, MetaData, insert
+from sqlalchemy import Table, MetaData, insert, select, update
 import time
 import warnings
 
@@ -86,14 +86,25 @@ def update_db(df):
     orm_columns = cbrf_data.columns.keys()
     df.columns = orm_columns
 
-    records = df.to_dict(orient="records")
-    stmt = insert(cbrf_data).values(records)
-
-    set_dict = {col: stmt.excluded[col] for col in df.columns if col != "date"}
-    stmt = stmt.on_conflict_do_update(index_elements=["date"], set_=set_dict)
-
     with connection().begin() as conn:
-        conn.execute(stmt)
+        for record in df.to_dict(orient="records"):
+            # Check if record exists
+            existing = conn.execute(
+                select(cbrf_data).where(cbrf_data.c.date == record["date"])
+            ).first()
+            
+            if existing:
+                # Update existing record
+                update_stmt = (
+                    update(cbrf_data)
+                    .where(cbrf_data.c.date == record["date"])
+                    .values(**{k: v for k, v in record.items() if k != "date"})
+                )
+                conn.execute(update_stmt)
+            else:
+                # Insert new record
+                insert_stmt = insert(cbrf_data).values(**record)
+                conn.execute(insert_stmt)
 
 
 def main():
