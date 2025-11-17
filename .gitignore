@@ -15,3 +15,9 @@ Thumbs.db
 
 # Файлы для работы проекта
 *.egg-info
+
+# Переменные окружения
+.env
+*.env
+.env.local
+.env.production
