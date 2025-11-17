@@ -1,6 +1,7 @@
 FROM public.ecr.aws/docker/library/python:3.11-alpine
 
-COPY pyproject.toml uv.lock /tmp/
+COPY . /code
+WORKDIR /code
 
 RUN pip install uv
 
@@ -9,9 +10,6 @@ RUN apk update && apk add --no-cache \
     postgresql-dev \
     linux-headers
 
-RUN cd /tmp && uv sync --locked
-
-COPY . /code
-WORKDIR /code
+RUN uv sync --locked
 
 CMD ["bash"]
