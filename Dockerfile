@@ -4,7 +4,10 @@ COPY pyproject.toml uv.lock /tmp/
 
 RUN pip install uv
 
-RUN apk update && apk add --no-cache build-base postgresql-dev
+RUN apk update && apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    linux-headers
 
 RUN cd /tmp && uv sync --locked
 

@@ -59,7 +59,7 @@ services:
 
 
   tinkoff_stock:
-    container_name: t_pulse
+    container_name: tinkoff_stock
     command: uv run python ./scripts/tinkoff/tinkoff_stock.py
     restart: always
     build:
@@ -75,4 +75,4 @@ volumes:
   moex_iss_dividends:
   cbrf_data:
   t_pulse:
-  tinkoff:
+  tinkoff_stock:
