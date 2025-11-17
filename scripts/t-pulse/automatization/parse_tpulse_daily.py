@@ -4,17 +4,12 @@
 import pandas as pd
 from datetime import datetime
 import time
-import psycopg2
 from tpulse import TinkoffPulse
 
-# ----------------- Настройки базы данных -----------------
-DB_CONFIG = {
-    "dbname": "russian-stocks-prediction-ml-dl",
-    "user": "root",
-    "password": "groot",
-    "host": "185.70.105.233",
-    "port": 5432,
-}
+
+from utils.utils import connection
+
+
 
 TABLE_NAME = "t_pulse_data"
 
@@ -184,7 +179,7 @@ def update_posts_table(df):
     if df.empty:
         log("[INFO] Нет новых данных для обновления.")
         return
-    conn = psycopg2.connect(**DB_CONFIG)
+    conn = connection()
     cursor = conn.cursor()
 
     for ticker in df["ticker"].unique():

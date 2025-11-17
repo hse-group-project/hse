@@ -1,24 +1,15 @@
 import pandas as pd
 import requests
 from datetime import datetime
-from sqlalchemy import create_engine, Table, MetaData, insert
+from sqlalchemy import Table, MetaData, insert
 from requests.exceptions import ConnectTimeout
 import time
 import warnings
 
+
+from utils.utils import connection
+
 warnings.simplefilter(action="ignore", category=FutureWarning)
-
-
-def connection():
-    db_params = {
-        "dbname": "russian-stocks-prediction-ml-dl",
-        "user": "root",
-        "password": "groot",
-        "host": "185.70.105.233",
-        "port": "5432",
-    }
-    conn_str = f"postgresql+psycopg2://{db_params['user']}:{db_params['password']}@{db_params['host']}:{db_params['port']}/{db_params['dbname']}"
-    return create_engine(conn_str)
 
 
 def fetch_today_index_data(index_code, today_date):
