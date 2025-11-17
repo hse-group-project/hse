@@ -1,13 +1,10 @@
-FROM python:3.11-slim
+FROM public.ecr.aws/docker/library/python:3.11-alpine
 
 COPY pyproject.toml uv.lock /tmp/
 
 RUN pip install uv
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    postgresql-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache build-base postgresql-dev
 
 RUN cd /tmp && uv sync --locked
 
