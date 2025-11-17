@@ -1,15 +1,21 @@
-FROM public.ecr.aws/docker/library/python:3.11-alpine
+FROM public.ecr.aws/docker/library/python:3.11-slim-bullseye
 
-COPY . /code
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir uv
+
+# Копирование только файлов зависимостей сначала
+COPY pyproject.toml uv.lock* /code/
 WORKDIR /code
 
-RUN pip install uv
+# Установка зависимостей
+RUN uv sync --locked --no-dev
 
-RUN apk update && apk add --no-cache \
-    build-base \
-    postgresql-dev \
-    linux-headers
-
-RUN uv sync --locked
+# Копирование остального кода
+COPY . /code
 
 CMD ["bash"]

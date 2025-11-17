@@ -1,6 +1,12 @@
 version: '3.8'
 
 services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: russian-stocks-prediction-ml-dl
+
   db:
     image: postgres
     container_name: postgres
@@ -18,61 +24,51 @@ services:
     container_name: moex_iss_indices
     command: uv run python ./scripts/moex_iss_indices/moex_iss_indices.py
     restart: always
-    build:
-      context: "."
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./scripts/moex_iss_indices:/code/scripts/moex_iss_indices
-
+    env_file:
+      - .env
+    image: russian-stocks-prediction-ml-dl
+    depends_on:
+      - db
 
   moex_iss_dividends:
     container_name: moex_iss_dividends
     command: uv run python ./scripts/moex_iss_dividends/moex_iss_dividends.py
     restart: always
-    build:
-      context: "."
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./scripts/moex_iss_dividends:/code/scripts/moex_iss_dividends
-
+    env_file:
+      - .env
+    image: russian-stocks-prediction-ml-dl
+    depends_on:
+      - db
 
   cbrf_data:
     container_name: cbrf_data
     command: uv run python ./scripts/cbrf/cbrf_data.py
     restart: always
-    build:
-      context: "."
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./scripts/cbrf_data:/code/scripts/cbrf_data
-
+    env_file:
+      - .env
+    image: russian-stocks-prediction-ml-dl
+    depends_on:
+      - db
 
   t_pulse:
     container_name: t_pulse
     command: uv run python ./scripts/t-pulse/automatization/parse_tpulse_daily.py
     restart: always
-    build:
-      context: "."
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./scripts/t_pulse:/code/scripts/t_pulse
-
+    env_file:
+      - .env
+    image: russian-stocks-prediction-ml-dl
+    depends_on:
+      - db
 
   tinkoff_stock:
     container_name: tinkoff_stock
     command: uv run python ./scripts/tinkoff/tinkoff_stock.py
     restart: always
-    build:
-      context: "."
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./scripts/tinkoff:/code/scripts/tinkoff
-
+    env_file:
+      - .env
+    image: russian-stocks-prediction-ml-dl
+    depends_on:
+      - db
 
 volumes:
   postgres_data:
-  moex_iss_indices:
-  moex_iss_dividends:
-  cbrf_data:
-  t_pulse:
-  tinkoff_stock:

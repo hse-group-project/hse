@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from datetime import datetime
-from sqlalchemy import Table, MetaData, insert
+from sqlalchemy import Table, MetaData
 from requests.exceptions import ConnectTimeout
 import time
 import warnings
@@ -37,13 +37,32 @@ def fetch_today_index_data(index_code, today_date):
 
 def update_db(df):
     records = df.to_dict(orient="records")
-    stmt = insert(indices_prices).values(records)
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["date", "index_code"],
-        set_={"open": stmt.excluded.open, "close": stmt.excluded.close},
-    )
+
     with connection().begin() as conn:
-        conn.execute(stmt)
+        for record in records:
+            # Check if record exists
+            existing = conn.execute(
+                indices_prices.select().where(
+                    (indices_prices.c.date == record["date"])
+                    & (indices_prices.c.index_code == record["index_code"])
+                )
+            ).first()
+
+            if existing:
+                # Update existing record
+                update_stmt = (
+                    indices_prices.update()
+                    .where(
+                        (indices_prices.c.date == record["date"])
+                        & (indices_prices.c.index_code == record["index_code"])
+                    )
+                    .values(open=record["open"], close=record["close"])
+                )
+                conn.execute(update_stmt)
+            else:
+                # Insert new record
+                insert_stmt = indices_prices.insert().values(**record)
+                conn.execute(insert_stmt)
 
 
 def main():
