@@ -1,3 +1,5 @@
+import logging
+import sys
 import pandas as pd
 import requests
 from datetime import datetime
@@ -6,6 +8,14 @@ import time
 import warnings
 
 from utils.utils import connection
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -113,10 +123,10 @@ def main():
         full_df = fetch_last_cbrf_data(cur_year)
         if len(full_df) > 0:
             update_db(full_df)
-            print("Данные собраны и обновлены в БД.")
+            logger.info("Данные собраны и обновлены в БД.")
         else:
-            print("Данные за текущий год пока отсутствуют.")
-        print("Следующая итерация будет запущена через 14 дней.")
+            logger.info("Данные за текущий год пока отсутствуют.")
+        logger.info("Следующая итерация будет запущена через 14 дней.")
         time.sleep(14 * 24 * 3600)
 
 

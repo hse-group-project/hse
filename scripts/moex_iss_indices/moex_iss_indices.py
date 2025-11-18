@@ -1,3 +1,5 @@
+import logging
+import sys
 import pandas as pd
 import requests
 from datetime import datetime
@@ -8,6 +10,14 @@ import warnings
 
 
 from utils.utils import connection
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -76,10 +86,10 @@ def main():
         if all_data:
             full_df = pd.concat(all_data, ignore_index=True)
             update_db(full_df)
-            print("Данные за сегодня успешно собраны и обновлены в БД.")
+            logger.info("Данные за сегодня успешно собраны и обновлены в БД.")
         else:
-            print("Данные за сегодня пока отсутствуют.")
-        print("Ждем 3 часа до следующей итерации.")
+            logger.info("Данные за сегодня пока отсутствуют.")
+        logger.info("Ждем 3 часа до следующей итерации.")
         time.sleep(3 * 3600)
 
 
