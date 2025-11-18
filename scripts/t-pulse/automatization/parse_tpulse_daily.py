@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import logging
+import sys
 import pandas as pd
-from datetime import datetime
 import time
 from sqlalchemy import text
 from tpulse import TinkoffPulse
 
 
 from utils.utils import connection
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
 
 
 TABLE_NAME = "t_pulse_data"
@@ -20,19 +28,6 @@ MAX_RETRIES = 3
 SLEEP_BETWEEN_PAGES = 0.5  # пауза между страницами
 SLEEP_BETWEEN_TICKERS = 2  # пауза между тикерами
 SLEEP_ON_ERROR = 5  # пауза перед повторной попыткой
-
-# ----------------- Настройки логирования -----------------
-LOG_FILE = "parse_tpulse.log"
-
-
-def log(message):
-    """Записываем сообщение с датой и временем в лог"""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    line = f"[{timestamp}] {message}"
-    print(line)
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(line + "\n")
-
 
 # ----------------- Список тикеров -----------------
 
@@ -155,12 +150,12 @@ def parsing_tpulse_last_twentyeight_days(ticker, KEYS):
                 time.sleep(SLEEP_BETWEEN_PAGES)  # пауза между страницами
                 break  # успешный запрос
             except Exception as e:
-                log(
+                logger.warning(
                     f"[WARN] Ошибка при парсинге {ticker}: {e}, попытка {attempt + 1}/{MAX_RETRIES}"
                 )
                 time.sleep(SLEEP_ON_ERROR)
         else:
-            log(
+            logging.erro(
                 f"[ERROR] Не удалось получить данные по {ticker} после {MAX_RETRIES} попыток"
             )
             break
@@ -177,7 +172,7 @@ def parsing_tpulse_last_twentyeight_days(ticker, KEYS):
 def update_posts_table(df):
     """Обновляем таблицу в PostgreSQL"""
     if df.empty:
-        log("[INFO] Нет новых данных для обновления.")
+        logging.info("[INFO] Нет новых данных для обновления.")
         return
 
     conn = connection()
@@ -220,7 +215,7 @@ def update_posts_table(df):
                 )
                 count += 1
 
-            log(f"[INFO] Данные по {ticker} обновлены: {count} постов")
+            logging.info(f"[INFO] Данные по {ticker} обновлены: {count} постов")
 
     # Соединение автоматически закрывается при выходе из with блока
 
@@ -230,17 +225,17 @@ def update_posts_table(df):
 
 def main():
     while True:
-        log("[INFO] Запуск скрипта парсинга Т-пульса")
+        logging.info("[INFO] Запуск скрипта парсинга Т-пульса")
         all_data = pd.DataFrame()
         for ticker in tickers:
-            log(f"[INFO] Парсинг тикера {ticker} ...")
+            logging.info(f"[INFO] Парсинг тикера {ticker} ...")
             df = parsing_tpulse_last_twentyeight_days(ticker, KEYS)
-            log(f"[INFO] Найдено {len(df)} постов за последние 2 недели для {ticker}")
+            logging.info(f"[INFO] Найдено {len(df)} постов за последние 2 недели для {ticker}")
             all_data = pd.concat([all_data, df], axis=0)
             time.sleep(SLEEP_BETWEEN_TICKERS)  # пауза между тикерами
 
         update_posts_table(all_data)
-        log("[INFO] Скрипт завершил выполнение. Ждем 1 день до следующей итерации.")
+        logging.info("[INFO] Скрипт завершил выполнение. Ждем 1 день до следующей итерации.")
         time.sleep(24 * 60 * 60)
 
 

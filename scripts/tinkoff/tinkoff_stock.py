@@ -1,3 +1,5 @@
+import logging
+import sys
 import pandas as pd
 from datetime import datetime, timedelta
 import time
@@ -7,6 +9,15 @@ from tinkoff.invest import Client, CandleInterval
 from utils.utils import connection
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
+
 TINKOFF_TOKEN = os.getenv("TINKOFF_TOKEN")
 
 
@@ -33,7 +44,7 @@ def update_stock_data():
             conn,
         )
 
-    print(f"🔄 Обработка {len(tickers_df)} тикеров...")
+    logging.info(f"🔄 Обработка {len(tickers_df)} тикеров...")
 
     total_added = 0
 
@@ -44,7 +55,7 @@ def update_stock_data():
 
         try:
             if pd.isna(last_date):
-                print(f"⏩ Пропускаем {ticker}: нет исторических данных")
+                logging.info(f"⏩ Пропускаем {ticker}: нет исторических данных")
                 continue
 
             # Нормализуем дату (убираем часовой пояс если есть)
@@ -88,34 +99,34 @@ def update_stock_data():
                     # Простое сохранение через pandas
                     df.to_sql("candles", engine, if_exists="append", index=False)
                     total_added += len(new_data)
-                    print(f"✅ {ticker}: +{len(new_data)} свечей")
+                    logging.info(f"✅ {ticker}: +{len(new_data)} свечей")
                 else:
-                    print(f"📭 {ticker}: нет новых данных")
+                    logging.info(f"📭 {ticker}: нет новых данных")
 
             time.sleep(0.5)
 
         except Exception as e:
-            print(f"❌ {ticker}: {e}")
+            logging.error(f"❌ {ticker}: {e}")
 
-    print(f"🎉 Добавлено {total_added} новых свечей")
+    logging.info(f"🎉 Добавлено {total_added} новых свечей")
     return total_added
 
 
 def main():
     """Основной цикл"""
-    print("🚀 Сервис обновления данных запущен")
+    logging.info("🚀 Сервис обновления данных запущен")
 
     while True:
         try:
-            print(f"\n=== {datetime.now().replace(microsecond=0)} ===")
+            logging.info(f"\n=== {datetime.now().replace(microsecond=0)} ===")
             update_stock_data()
-            print("💤 Ожидание 24 часа...")
+            logging.info("💤 Ожидание 24 часа...")
             time.sleep(24 * 3600)
         except KeyboardInterrupt:
-            print("\n🛑 Остановлено")
+            logging.error("\n🛑 Остановлено")
             break
         except Exception as e:
-            print(f"🔥 Ошибка: {e}")
+            logging.error(f"🔥 Ошибка: {e}")
             time.sleep(300)
 
 

@@ -1,3 +1,5 @@
+import logging
+import sys
 import requests
 import time
 import pandas as pd
@@ -6,6 +8,14 @@ from requests.exceptions import ConnectTimeout
 import warnings
 
 from utils.utils import connection
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -46,12 +56,12 @@ def main():
             full_df.to_sql(
                 "moex_iss_dividends", con=connection(), if_exists="replace", index=False
             )
-            print(
+            logger.info(
                 f"Данные  успешно собраны и обновлены в БД {datetime.today().date()}."
             )
         else:
-            print("Данные за сегодня пока отсутствуют.")
-        print("Ждем 30 дней до следующей итерации.")
+            logger.info("Данные за сегодня пока отсутствуют.")
+        logger.info("Ждем 30 дней до следующей итерации.")
         time.sleep(30 * 24 * 60 * 60)
 
 
