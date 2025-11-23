@@ -175,49 +175,50 @@ def update_posts_table(df):
         logging.info("[INFO] Нет новых данных для обновления.")
         return
 
-    conn = connection()
+    engine = connection()
 
-    with conn.begin():  # автоматическое управление транзакциями
-        for ticker in df["ticker"].unique():
-            # Удаляем старые данные
-            conn.execute(
-                text(f"""
-                    DELETE FROM {TABLE_NAME}
-                    WHERE ticker = :ticker AND inserted >= current_date - interval '28 days'
-                """),
-                {"ticker": ticker},
-            )
-
-            # Вставляем новые данные
-            ticker_data = df[df["ticker"] == ticker]
-            count = 0
-
-            for _, row in ticker_data.iterrows():
+    with engine.connect() as conn:
+        with conn.begin():  # автоматическое управление транзакциями
+            for ticker in df["ticker"].unique():
+                # Удаляем старые данные
                 conn.execute(
                     text(f"""
-                        INSERT INTO {TABLE_NAME} (id, ticker, inserted, text, commentscount, reactioncount, reactions_counters)
-                        VALUES (:id, :ticker, :inserted, :text, :commentscount, :reactioncount, :reactions_counters)
-                        ON CONFLICT (id, ticker) DO UPDATE SET
-                            text = EXCLUDED.text,
-                            commentscount = EXCLUDED.commentscount,
-                            reactioncount = EXCLUDED.reactioncount,
-                            reactions_counters = EXCLUDED.reactions_counters
+                        DELETE FROM {TABLE_NAME}
+                        WHERE ticker = :ticker AND inserted >= current_date - interval '28 days'
                     """),
-                    {
-                        "id": row.id,
-                        "ticker": row.ticker,
-                        "inserted": row.inserted,
-                        "text": row.text,
-                        "commentscount": row.commentscount,
-                        "reactioncount": row.reactioncount,
-                        "reactions_counters": str(row.reactions_counters),
-                    },
+                    {"ticker": ticker},
                 )
-                count += 1
 
-            logging.info(f"[INFO] Данные по {ticker} обновлены: {count} постов")
+                # Вставляем новые данные
+                ticker_data = df[df["ticker"] == ticker]
+                count = 0
 
-    # Соединение автоматически закрывается при выходе из with блока
+                for _, row in ticker_data.iterrows():
+                    conn.execute(
+                        text(f"""
+                            INSERT INTO {TABLE_NAME} (id, ticker, inserted, text, commentscount, reactioncount, reactions_counters)
+                            VALUES (:id, :ticker, :inserted, :text, :commentscount, :reactioncount, :reactions_counters)
+                            ON CONFLICT (id, ticker) DO UPDATE SET
+                                text = EXCLUDED.text,
+                                commentscount = EXCLUDED.commentscount,
+                                reactioncount = EXCLUDED.reactioncount,
+                                reactions_counters = EXCLUDED.reactions_counters
+                        """),
+                        {
+                            "id": row.id,
+                            "ticker": row.ticker,
+                            "inserted": row.inserted,
+                            "text": row.text,
+                            "commentscount": row.commentscount,
+                            "reactioncount": row.reactioncount,
+                            "reactions_counters": str(row.reactions_counters),
+                        },
+                    )
+                    count += 1
+
+                logging.info(f"[INFO] Данные по {ticker} обновлены: {count} постов")
+
+        # Соединение автоматически закрывается при выходе из with блока
 
 
 # ----------------- Основной цикл -----------------
